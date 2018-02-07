@@ -1,2 +1,3 @@
-# monero_app
-silly java project to learn json
+# Monero Wallet Validator
+
+Checks the Keccak hash to validate the wallet.
