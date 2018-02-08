@@ -22,31 +22,27 @@ import keccak.KeccakSponge;
 
 public class Wallet {
     public boolean valid;
-    public String errormessage;
+    private final int error;
     private final String StrValue;
     private static final String Alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
     
     public Wallet(String str){
         StrValue = str;
-        int error = Validate(StrValue);
-        switch (error){
-            case 0:valid = true;
-            break;
-            case 1:valid = false;
-            errormessage = "incorrect length";
-            break;
-            case 2:valid = false;
-            errormessage = "incorrect characters";
-            break;
-            case 3:valid = false;
-            errormessage = "incorrect byte signature";
-            break;
-            case 4:valid = false;
-            errormessage = "hash failed";
-            break;               
-        }
+        error = Validate(StrValue);
+        valid = true;
+        if (error>0){valid=false;}
     }
     
+    public String GetError(){
+        switch (error){
+            case 0:return "";
+            case 1:return "incorrect length";
+            case 2:return "incorrect characters";
+            case 3:return "incorrect byte signature";
+            case 4:return "hash failed";        
+            default:return null;
+        }
+    }
     public String GetString(){
         return StrValue;
     }
