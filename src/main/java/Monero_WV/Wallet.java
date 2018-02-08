@@ -16,37 +16,58 @@
  */
 package Monero_WV;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import keccak.KeccakSponge;
 
 public class Wallet {
     public boolean valid;
+    public String errormessage;
     private final String StrValue;
-    private byte[] BytValue;
-    private final String Alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+    private static final String Alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
     
     public Wallet(String str){
         StrValue = str;
-        valid = Validate();
+        int error = Validate(StrValue);
+        switch (error){
+            case 0:valid = true;
+            break;
+            case 1:valid = false;
+            errormessage = "incorrect length";
+            break;
+            case 2:valid = false;
+            errormessage = "incorrect characters";
+            break;
+            case 3:valid = false;
+            errormessage = "incorrect byte signature";
+            break;
+            case 4:valid = false;
+            errormessage = "hash failed";
+            break;               
+        }
     }
     
     public String GetString(){
         return StrValue;
     }
     
-    private Boolean Validate(){
-        if (StrValue.length()!=95){return false;}
-        Wallet2Byte();
+    private static int Validate(String str){
+        if (str.length()!=95){return 1;} //length
+        Pattern p = Pattern.compile("[^"+Alphabet+"]");
+        Matcher m = p.matcher(str);
+        if (m.matches()){return 2;}
+        byte[] BytValue = Wallet2Byte(str);
+        if (BytValue[0]!=18){return 3;}
         byte[] toHash = new byte[65];
         System.arraycopy(BytValue, 0, toHash, 0, 65);
         byte[] HashRes = Hash(toHash);
-        Boolean result = true;
         for (int i = 0;i<4;i++){
-            if (HashRes[i] != BytValue[65+i]){result=false;}
+            if (HashRes[i] != BytValue[65+i]){return 4;}
         }
-        return result;
+        return 0;
     }
     
-    private byte[] Hash(byte[] values){
+    private static byte[] Hash(byte[] values){
         KeccakSponge spongeFunction = new KeccakSponge(1088, 512, "", 256);
         byte[] hashBytes = spongeFunction.apply(values);
         byte[] out = new byte[4];
@@ -54,14 +75,14 @@ public class Wallet {
         return out;
     }
     
-    private void Wallet2Byte(){
-        BytValue = new byte[69];
+    private static byte[] Wallet2Byte(String str){
+        byte[] BytValue = new byte[69];
         long[] factors = new long[11]; //58**11, 58**11 etc.
         for (int i=0;i<factors.length;i++){
             factors[i] = pow(58,factors.length-i-1);
         }
         for(int i=0;i<8;i++){ //first eight blocks of 11 base 58 characters
-            String substr = StrValue.substring(i*11, (i+1)*11);
+            String substr = str.substring(i*11, (i+1)*11);
             long val = 0; //signed int64
             for (int j=0;j<11;j++){
                 val += factors[j]*Alphabet.indexOf(substr.charAt(j));
@@ -70,7 +91,7 @@ public class Wallet {
             System.arraycopy(valB, 0, BytValue, i*8, 8);
         }
         //last block of 7 base 58 caracters
-        String substr = StrValue.substring(88, 95);
+        String substr = str.substring(88, 95);
         long val = 0;
         for (int j = 0;j<7;j++){
             val += factors[j+4]*Alphabet.indexOf(substr.charAt(j));
@@ -79,6 +100,7 @@ public class Wallet {
         for (int j = 0;j<5;j++){
             BytValue[64+j]=valB[3+j];
         }
+        return BytValue;
     }
     
     private static long pow (long a, int b)
