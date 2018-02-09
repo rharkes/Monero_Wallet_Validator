@@ -10,5 +10,6 @@
       <TextField fx:id="wallet_txt" layoutX="11.0" layoutY="34.0" prefHeight="25.0" prefWidth="1053.0" />
       <Label layoutX="14.0" layoutY="14.0" text="Wallet Adress" />
       <Button layoutX="11.0" layoutY="66.0" mnemonicParsing="false" onAction="#handleupdate_wallet" text="Check" />
+      <Label fx:id="msg" layoutX="110.0" layoutY="70.0" />
     </children>
 </AnchorPane>

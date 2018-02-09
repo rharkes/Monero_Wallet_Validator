@@ -51,7 +51,7 @@ public class Wallet {
         if (str.length()!=95){return 1;} //length
         Pattern p = Pattern.compile("[^"+Alphabet+"]");
         Matcher m = p.matcher(str);
-        if (m.matches()){return 2;}
+        if (m.find()){return 2;}
         byte[] BytValue = Wallet2Byte(str);
         if (BytValue[0]!=18){return 3;}
         byte[] toHash = new byte[65];
