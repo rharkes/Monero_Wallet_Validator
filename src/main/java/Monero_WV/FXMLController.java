@@ -22,6 +22,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
@@ -35,17 +36,17 @@ public class FXMLController implements Initializable {
     private TextField wallet_txt;
     @FXML
     private AnchorPane APane;
+    @FXML
+    private Label msg;
     
     
     @FXML
     private void handleupdate_wallet(ActionEvent event) {
         Wallet wallet = new Wallet(wallet_txt.getText());
-        if (wallet.valid){
-            APane.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
-        }else{
-            APane.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
-        }
-        
+        Color c = wallet.valid ? Color.GREEN : Color.RED;
+        String error = wallet.valid ? "wallet OK": wallet.GetError();
+        msg.setBackground(new Background(new BackgroundFill(c, CornerRadii.EMPTY, Insets.EMPTY)));
+        msg.setText(error);
     }
     @Override
     public void initialize(URL url, ResourceBundle rb) {
