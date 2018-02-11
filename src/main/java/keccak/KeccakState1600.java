@@ -148,8 +148,7 @@ final class KeccakState1600 extends KeccakState {
 		for (int laneByteIndex = laneByteCount - 1; laneByteIndex >= 0;
 				--laneByteIndex) {
 			laneValue <<= Byte.SIZE;
-			laneValue += Byte.toUnsignedInt(input[inputByteStartIndex
-					+ laneByteIndex]);
+			laneValue += 0xFF & (int) input[inputByteStartIndex + laneByteIndex];
 		}
 		laneArray[x][y] = laneArray[x][y] ^ laneValue;
 	}
